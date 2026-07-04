@@ -1,0 +1,105 @@
+# ============================================================
+# Football Analytics — Main Configuration File
+# ============================================================
+# Edit this file to adjust pipeline parameters before running:
+#   python main.py
+#
+# Console prompts override these values for the current run only.
+# ============================================================
+
+# --------------- Model Paths (local) -----------------------
+models:
+  detection: models/detection/best.pt          # YOLO detection model
+  segmentation: models/segmentation/train_59.pt # TVCalib segmentation model
+
+# --------------- TVCalib Integration -----------------------
+tvcalib:
+  repo_dir: tvcalib                            # Local clone of the TVCalib repository
+  template_path: assets/template_pitch_t.png  # Pitch template image for the minimap
+
+# --------------- Default I/O Paths -------------------------
+video:
+  input_path: inputs/input.mp4                # Default input video path
+  output_dir: outputs                          # Directory for all output videos
+
+# --------------- Output Filenames --------------------------
+output:
+  annotated_video: annotated.mp4
+  calibration_video: calibration_preview.mp4
+  radar_video: radar.mp4
+  voronoi_video: voronoi.mp4
+
+# --------------- Detection Settings -----------------------
+detection:
+  confidence: 0.6          # YOLO confidence threshold (0.0–1.0)
+  batch_size: 32           # Frames per YOLO inference batch
+  verbose: false           # Print YOLO inference logs
+  stream: true             # Use streaming inference (lower memory usage)
+
+# --------------- ByteTrack Parameters ---------------------
+bytetrack:
+  track_activation_threshold: 0.65   # Min detection score to activate a new track
+  lost_track_buffer_seconds: 1.0     # How many seconds to keep a lost track alive
+                                     # (multiplied by video FPS at runtime)
+  minimum_matching_threshold: 0.9    # IoU threshold for matching detections to tracks
+  minimum_consecutive_frames: 10     # Min consecutive frames to confirm a new track
+
+# --------------- Stub / Cache -----------------------------
+stubs:
+  use_stub: true                     # Cache tracking results to disk
+  stub_path: stubs/track_stubs.pkl   # Path to the tracking cache file
+
+# --------------- Calibration Settings --------------------
+calibration:
+  image_width: 1920          # Source video frame width
+  image_height: 1080         # Source video frame height
+  max_frames: null           # Max frames to calibrate; null = full video
+  frame_batch_size: 128      # Frames saved to disk per outer batch
+  batch_size_seg: 8          # Batch size for segmentation network
+  batch_size_calib: 64       # Batch size for calibration network
+  nworkers: 4                # DataLoader / multiprocessing workers
+  optim_steps: 3000          # Optimization iterations per calibration batch
+  lens_dist: false           # Whether to use lens distortion model
+  gpu: true                  # Use CUDA if available
+  temp_root: .temp_calib     # Temporary directory for frame batches
+  line_skeleton_radius: 4    # Skeletonisation radius for field-line detection
+  extremities_maxdist: 30    # Max distance between keypoint extremities
+  extremities_width: 455     # Width for extremity extraction
+  extremities_height: 256    # Height for extremity extraction
+  num_points_lines: 4        # Keypoints sampled per field line
+  num_points_circles: 8      # Keypoints sampled per circle arc
+
+# --------------- Team Classifier -------------------------
+team_classifier:
+  model_name: google/siglip-base-patch16-224  # HuggingFace model for jersey embeddings
+  batch_size: 32             # Images per embedding batch
+  n_clusters: 2              # Number of teams
+  warmup_samples: 150        # Crops collected before the classifier is fitted
+  buffer_frames: 10          # Frames accumulated before a track ID is locked to a team
+
+# --------------- Radar Minimap ---------------------------
+radar:
+  width: 1050                # Radar canvas width (pixels)
+  height: 680                # Radar canvas height (pixels)
+  pitch_length: 105.0        # Real pitch length in metres
+  pitch_width: 68.0          # Real pitch width in metres
+  show_speed: true           # Show km/h labels next to player dots
+  show_id: false             # Show track IDs next to player dots
+
+# --------------- Voronoi Diagram -------------------------
+voronoi:
+  alpha: 0.38                # Transparency of team-coloured regions (0.0–1.0)
+  grid_step: 4               # Pixel grid step for Voronoi approximation (lower = finer)
+  draw_boundaries: true      # Draw region boundary lines
+  include_goalkeepers: true  # Include goalkeepers in Voronoi regions
+  show_id: false
+  show_speed: false
+
+# --------------- Main Video Annotations ------------------
+visualization:
+  show_ball_possession: true  # Draw ball-possession statistics overlay
+  show_speed: false           # Draw per-player speed (km/h) overlay
+                               # NOTE: requires calibration data (position_field).
+                               # Mode 2 (Default) never runs calibration, so this
+                               # has no effect there. Use Mode 1 or Mode 3 (with
+                               # calibration/radar/voronoi enabled) for speed.
