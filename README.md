@@ -8,7 +8,7 @@ Given a broadcast video, the pipeline detects players, tracks them across frames
 
 ## Demo
 
-<video controls src="assets/DEMO.MOV" ></video>
+[Watch demo video](assets/DEMO.MOV)
 
 ---
 
