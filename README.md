@@ -8,7 +8,7 @@ Given a broadcast video, the pipeline detects players, tracks them across frames
 
 ## Demo
 
-[Watch demo video]([assets/DEMO.MOV](https://drive.google.com/file/d/1bCuXH1hvPvcgjCuPaUzcP0v9im6ocE9Q/view?usp=sharing))
+[Watch demo video](https://drive.google.com/file/d/1bCuXH1hvPvcgjCuPaUzcP0v9im6ocE9Q/view?usp=sharing)
 
 ---
 
